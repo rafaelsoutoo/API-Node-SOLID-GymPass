@@ -20,9 +20,10 @@ model User {
   password_hash String
   created_at    DateTime @default(now())
 
+  //o User pode ter varios checkins
   checkIns CheckIn[]
 
-  @@map("users") //mudar o nome da tabela qnd quer
+  @@map("users") //mudar o nome da tabela
 }
 
 model CheckIn {
@@ -30,9 +31,11 @@ model CheckIn {
   created_at   DateTime  @default(now())
   validated_at DateTime?
 
+  //checkin se relaciona com a tebela User "user" é o nome do relacionamento
   user    User   @relation(fields: [gym_id], references: [id])
   user_id String
 
+  // checkin se relaciona com uma GYM
   gym    Gym    @relation(fields: [user_id], references: [id])
   gym_id String
 
@@ -47,6 +50,7 @@ model Gym {
   latitude    Decimal
   longitude   Decimal
 
+  // uma gym pode esta relaciona a varios checkin
   checkIns CheckIn[]
 
   @@map("gyms")
