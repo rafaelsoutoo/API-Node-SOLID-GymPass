@@ -13,7 +13,16 @@ interface CheckinUseCaseResponse {// oq vai retornar
 export class CheckinUseCase{
     constructor(private checkinRepository: CheckInsRepository){}
 
-    async execute({userId, gymId}: CheckinUseCaseRequest): Promise<CheckinUseCaseResponse>{
+    async execute({userId, gymId}:CheckinUseCaseRequest): Promise<CheckinUseCaseResponse>{
+        
+        const checkInOnSameDate = await this.checkinRepository.findByUserIdOnDate(
+            userId,
+            new Date()
+        )
+        if (checkInOnSameDate){
+            throw new Error()
+        }
+
         const checkIn = await this.checkinRepository.create({
             gym_id: gymId,
             user_id: userId,
