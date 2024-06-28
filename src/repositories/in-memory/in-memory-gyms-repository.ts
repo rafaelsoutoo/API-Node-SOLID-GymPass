@@ -22,7 +22,6 @@ export class inMemoryGymsRepository implements GymsRepository {
                 { latitude: item.latitude.toNumber(), longitude: item.longitude.toNumber()}
             )
 
-
             return distance < 10
         })
         
