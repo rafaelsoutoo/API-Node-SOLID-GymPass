@@ -15,7 +15,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
         }),
     });
 
-    const { title, description, phone, latitude, longitude } = createGymBodySchema.parse(request.body); //validação desses dados, throw automatico
+    const { title, description, phone, latitude, longitude } = createGymBodySchema.parse(request.body); 
 
     const createGymUseCase = makeCreateGymUseCase()
 
