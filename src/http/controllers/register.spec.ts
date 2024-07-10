@@ -4,7 +4,7 @@ import { describe } from 'node:test'
 import { afterAll, beforeAll, expect, it } from 'vitest'
 
 
-describe('Register (e2e', () => {
+describe('Register (e2e)', () => {
     beforeAll(async () => {
         await app.ready()
     })
