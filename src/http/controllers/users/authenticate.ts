@@ -4,7 +4,6 @@ import { InvalidCredentialsError } from "@/use-cases/errors/invalid-credentials-
 import { makeAuthenticateUseCase } from "@/use-cases/fectories/make-authenticate-use-case";
 
 export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
-  //criação do user
   const authenticateBodySchema = z.object({
     email: z.string().email(),
     password: z.string().min(6),
