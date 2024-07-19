@@ -1,76 +1,74 @@
-import { CheckIn, Prisma } from "@prisma/client";
-import { CheckInsRepository } from "../check-ins-repository";
-import { prisma } from "@/lib/prisma";
-import dayjs from "dayjs";
+import { prisma } from '@/lib/prisma'
+import { CheckInsRepository } from '@/repositories/check-ins-repository'
+import { CheckIn, Prisma } from '@prisma/client'
+import dayjs from 'dayjs'
 
 export class PrismaCheckInsRepository implements CheckInsRepository {
+  async findById(id: string) {  //pelo id retorna o check-in relacionado
+    const checkIn = await prisma.checkIn.findUnique({
+      where: {
+        id,
+      },
+    })
 
-    async create(data: Prisma.CheckInUncheckedCreateInput) {
-        const checkIn = await prisma.checkIn.create({
-            data,
-        })
-        return checkIn
-    }
+    return checkIn
+  }
 
+  async findByUserIdOnDate(userId: string, date: Date) {
+    const startOfTheDay = dayjs(date).startOf('date')
+    const endOfTheDay = dayjs(date).endOf('date')//ultimo momento valido do dia
 
-    async save(data: CheckIn) {
-        const checkIn = await prisma.checkIn.update({
-            where: {
-                id: data.id,
-            },
-            data,
-        })
-        return checkIn
-    }
+    const checkIn = await prisma.checkIn.findFirst({//encontrar um unico check-in que bata com essas condições
+      where: {
+        user_id: userId, //de um usuário específico
+        created_at: {//entre o começo do dia e do final do dia
+          gte: startOfTheDay.toDate(),//buscar por um checkin que tenha sido feito após o começo desse dia
+          lte: endOfTheDay.toDate(),// e que a data de de criação seja antes do final do dia
+        },
+      },
+    })
 
+    return checkIn //se tiver retorna
+  }
 
-    async findByUserIdOnDate(userId: string, date: Date) {
+  async findManyByUserId(userId: string, page: number) { //filtrando todos do usuário
+    const checkIns = await prisma.checkIn.findMany({ //encontrar vários
+      where: {
+        user_id: userId, 
+      },
+      skip: (page - 1) * 20,  //quanto itens quero pular
+      take: 20, //trazer 20 itens por página
+    })
 
-        const startOfTheDay = dayjs(date).startOf('date')
-        const endOfTheDay = dayjs(date).endOf('date')
+    return checkIns
+  }
 
-        const checkIn = await prisma.checkIn.findFirst({
-            where: {
-                user_id: userId,
-                created_at: {
-                    gte: startOfTheDay.toDate(),
-                    lte: endOfTheDay.toDate()
-                }
-            }
-        })
-        return checkIn
-    }
+  async countByUserId(userId: string) {  //retorna o numero total de chekin do usuário
+    const count = await prisma.checkIn.count({
+      where: {
+        user_id: userId,
+      },
+    })
 
+    return count
+  }
 
-    async findById(id: string) {
-        const checkIn = await prisma.checkIn.findUnique({
-            where: {
-                id,
-            }
-        })
-        return checkIn
-    }
+  async create(data: Prisma.CheckInUncheckedCreateInput) {  //cria o check-in
+    const checkIn = await prisma.checkIn.create({
+      data,
+    })
 
+    return checkIn //retorna o check-in criado
+  }
 
-    async findManyByUserId(userId: string, page: number) {
-        const checkIns = await prisma.checkIn.findMany({
-            where: {
-                user_id: userId,
-            },
-            take: 20, // qnts items que quero trazer
-            skip: (page - 1) * 20
-        })
-        return checkIns
-    }
+  async save(data: CheckIn) {//val salva o validated do check-in
+    const checkIn = await prisma.checkIn.update({
+      where: {
+        id: data.id, //id seja igual ao check-in que eu to recebendo aqui
+      },
+      data, //atualiza esses dados
+    })
 
-
-    async countByUserId(userId: string) {
-        const count = await prisma.checkIn.count({
-            where: {
-                user_id: userId,
-            }
-        })
-        return count
-    }
-
+    return checkIn
+  }
 }
