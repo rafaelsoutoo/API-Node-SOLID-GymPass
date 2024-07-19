@@ -1,0 +1,20 @@
+name: Run Unit Test
+
+# qnd eu quero executar esse workflow
+on: [push] #toda fez que fizer git push será executado as seguintes tarefas:
+
+jobs: 
+  run-unit-test:
+    name: Run Unit Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - run: npm ci #npm i porem não terá nenhuma interação ou alteração
+
+      - run: npm run test 
