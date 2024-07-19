@@ -20,13 +20,19 @@ export async function authenticate(request: FastifyRequest, reply: FastifyReply)
       password,
     })
 
-    const token = await reply.jwtSign({}, {
+    const token = await reply.jwtSign(
+      {
+        role: user.role
+      }, {
       sign: {
         sub: user.id
       }
     }) // serve para criar um novo token
 
-    const refreshToken = await reply.jwtSign({}, {
+    const refreshToken = await reply.jwtSign(
+      {
+        role: user.role
+      }, {
       sign: {
         sub: user.id,
         expiresIn: '7d', //perderá a auth se ficar 7 dias sem entrar, pois a cada 10m é atualizado o jwt
@@ -34,7 +40,7 @@ export async function authenticate(request: FastifyRequest, reply: FastifyReply)
     })
 
     return reply
-      .setCookie('refreshToken', refreshToken,{
+      .setCookie('refreshToken', refreshToken, {
         path: '/', // quaais rotas tem acesso, no caso de / todas
         secure: true, // o cookie será encriptado através de HTTPs
         sameSite: true, // esse cookie só vai ser acessivél dentro do mesmo domínio
